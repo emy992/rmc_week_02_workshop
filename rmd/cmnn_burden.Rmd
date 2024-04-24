@@ -2,17 +2,23 @@
 
 ```{r}
 # Load necessary packages
-pacman::p_load(tidyverse, knitr, here)
+pacman::p_load(tidyverse, knitr, here, janitor,esquisse)
 
 # Import the communicable diseases data
 data_cmnn <- read_csv(here("data", "burden-of-disease-cmnn.csv"))
+data_cmnn
 ```
 
 ## Table of Estimates for CMNN Burden Over Time
 
 ```{r}
-# Here render a table for the DALY burden over time for the three countries 
+# Here render a table for the DALY burden over time for the three countries
+three_counteries<-data_cmnn %>% filter(Entity==c("America","Andorra","Algeria")) %>% tabyl(Entity, Year)
 # You should pivot the data to show each country in a separate column.
+
+pivoted_data <- pivot_longer(three_counteries, cols = -Entity, names_to = "Year", values_to = "Value")
+table<-kable(pivoted_data)
+table
 # Use kable() from the knitr package to render the table.
 ```
 
@@ -20,10 +26,17 @@ data_cmnn <- read_csv(here("data", "burden-of-disease-cmnn.csv"))
 
 ```{r}
 # Here, plot a line graph showing the trend of DALY burden for the chosen countries over time. You can use ggplot2 to create this plot. Each country's line should be a different color.
+
+ggplot(pivoted_data) +
+  aes(x = Entity, y = Value, fill = Year) +
+  geom_col() +
+  scale_fill_hue(direction = 1) +
+  theme_minimal()
+
 ```
 
 ## Summary of CMNN Burden Findings
 
 Provide a brief analysis based on the data presented in the table and chart. Highlight any significant findings or patterns. About 3 sentences.
-
+DALYS is higher for Algeria than America and Andorra
 
